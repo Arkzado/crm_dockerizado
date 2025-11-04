@@ -1,0 +1,77 @@
+version: '3.8'
+
+services:
+  # ---
+  # Servicio 1: Frontend (Angular)
+  # Se construye desde su Dockerfile y corre en el puerto 4200
+  # ---
+  frontend:
+    build:
+      context: ./admin_metronic_v8.2.1
+    ports:
+      - "4200:4200" # Mapea: Tu PC (localhost:4200) -> Contenedor (4200)
+    volumes:
+      - ./admin_metronic_v8.2.1:/app  # Sincroniza tu código fuente
+      - /app/node_modules              # Evita que node_modules de tu PC sobrescriba el del contenedor
+    command: ng serve --host 0.0.0.0
+
+  # ---
+  # Servicio 2: Backend (Laravel)
+  # Se construye desde su Dockerfile y corre en el puerto 8000
+  # ---
+  backend:
+    build:
+      context: ./api-crm-erp
+    ports:
+      - "8000:8000" # Mapea: Tu PC (localhost:8000) -> Contenedor (8000)
+    volumes:
+      - ./api-crm-erp:/var/www # Sincroniza tu código fuente
+      - /var/www/vendor             # Protege la carpeta 'vendor' de la imagen
+    # Nota: No hay bloque 'environment' aquí.
+    # Laravel leerá la configuración directamente desde tu
+    # archivo .env (que está en la carpeta sincronizada).
+    depends_on:
+      - db # Le dice a Docker que inicie la DB primero
+
+  # ---
+  # Servicio 3: Base de Datos (MySQL)
+  # Usa una imagen oficial y carga tus datos desde init.sql
+  # ---
+  db:
+    image: mariadb:10.4
+    ports:
+      - "3306:3306" # Expone el puerto de MySQL a tu PC (opcional, útil para debug)
+    environment:
+      # Estas variables DEBEN COINCIDIR con tu archivo .env de Laravel
+      MYSQL_DATABASE: crm_erp_admin
+      MYSQL_USER: hola_mundo
+      MYSQL_PASSWORD: '12345678' 
+      MYSQL_ROOT_PASSWORD: root # Contraseña para el super-usuario 'root' de MySQL
+    volumes:
+      - db_data:/var/lib/mysql # Persiste los datos de la DB
+      # Esta línea es la clave:
+      # Monta tu archivo .sql en la carpeta de inicialización de MySQL.
+      # Se ejecutará automáticamente la PRIMERA vez que se cree el contenedor.
+      - ./db-init/init.sql:/docker-entrypoint-initdb.d/init.sql
+
+  # ---
+  # Servicio 4: phpMyAdmin
+  # Una interfaz gráfica para gestionar tu base de datos
+  # ---
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    ports:
+      - "8081:80" # Mapea: Tu PC (localhost:8081) -> Contenedor (80)
+    environment:
+      PMA_HOST: db        # Le dice a phpMyAdmin que se conecte al servicio 'db'
+      PMA_PORT: 3306
+    depends_on:
+      - db # Debe esperar a que la DB esté lista
+
+# ---
+# Volúmenes
+# Define el volumen 'db_data' para que tu base de datos
+# no se borre cada vez que apagas los contenedores.
+# ---
+volumes:
+  db_data:

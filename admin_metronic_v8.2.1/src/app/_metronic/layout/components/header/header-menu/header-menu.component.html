@@ -1,0 +1,96 @@
+<!-- Tablero -->
+<!-- <div class="menu-item me-lg-1">
+  <a class="menu-link py-3" routerLinkActive="active menu-here" routerLink="/dashboard">
+    <span class="menu-title"
+          translate="MENU.DASHBOARD"></span>
+  </a>
+</div> -->
+
+<!-- MegaMenú -->
+<div class="menu-item menu-lg-down-accordion me-lg-1" data-kt-menu-trigger="{default: 'click', lg: 'hover'}"
+       data-kt-menu-placement="bottom-start">
+    <span class="menu-link py-3">
+      <span class="menu-title">Diseño del sistema</span>
+      <span class="menu-arrow d-lg-none"></span>
+    </span>
+    <div class="menu-sub menu-sub-lg-down-accordion menu-sub-lg-dropdown p-0 w-100 w-lg-850px">
+      <!--inicio: Menú de tableros-->
+      <div class="menu-active-bg pt-1 pb-3 px-3 py-lg-6 px-lg-6" data-kt-menu-dismiss="true">
+        <!--inicio:Fila-->
+        <div class="row">
+          <!--inicio:Columna-->
+          <div class="col-lg-6">
+            <!--inicio:Fila-->
+            <div class="row">
+              <!--inicio:Columna-->
+              <div class="col-lg-6 mb-3">
+                <!--inicio:Título-->
+                <h4 class="fs-6 fs-lg-4 text-gray-800 fw-bold mt-3 mb-3 ms-4">Diseños</h4>
+                <!--fin:Título-->
+                <!--inicio:Elemento del menú-->
+                <div class="menu-item p-0 m-0">
+                  <!--inicio:Enlace del menú-->
+                  <a (click)="setBaseLayoutType('light-sidebar')" class="menu-link">
+                    <span class="menu-bullet">
+                      <span class="bullet bullet-dot bg-gray-300i h-6px w-6px"></span>
+                    </span>
+                    <span class="menu-title">Barra lateral clara</span>
+                  </a>
+                  <!--fin:Enlace del menú-->
+                </div>
+                <!--fin:Elemento del menú-->
+                <!--inicio:Elemento del menú-->
+                <div class="menu-item p-0 m-0">
+                  <!--inicio:Enlace del menú-->
+                  <a (click)="setBaseLayoutType('dark-sidebar')" class="menu-link">
+                    <span class="menu-bullet">
+                      <span class="bullet bullet-dot bg-gray-300i h-6px w-6px"></span>
+                    </span>
+                    <span class="menu-title">Barra lateral oscura</span>
+                  </a>
+                  <!--fin:Enlace del menú-->
+                </div>
+                <!--fin:Elemento del menú-->
+                <!--inicio:Elemento del menú-->
+                <div class="menu-item p-0 m-0">
+                  <!--inicio:Enlace del menú-->
+                  <a (click)="setBaseLayoutType('light-header')" class="menu-link">
+                    <span class="menu-bullet">
+                      <span class="bullet bullet-dot bg-gray-300i h-6px w-6px"></span>
+                    </span>
+                    <span class="menu-title">Encabezado claro</span>
+                  </a>
+                  <!--fin:Enlace del menú-->
+                </div>
+                <!--fin:Elemento del menú-->
+                <!--inicio:Elemento del menú-->
+                <div class="menu-item p-0 m-0">
+                  <!--inicio:Enlace del menú-->
+                  <a (click)="setBaseLayoutType('dark-header')" class="menu-link">
+                    <span class="menu-bullet">
+                      <span class="bullet bullet-dot bg-gray-300i h-6px w-6px"></span>
+                    </span>
+                    <span class="menu-title">Encabezado oscuro</span>
+                  </a>
+                  <!--fin:Enlace del menú-->
+                </div>
+                <!--fin:Elemento del menú-->
+              </div>
+              <!--fin:Columna-->
+            </div>
+            <!--fin:Fila-->
+            <div class="separator separator-dashed mx-lg-5 mt-2 mb-6"></div>
+            <!--inicio:Constructor de diseño-->
+          </div>
+          <!--fin:Columna-->
+          <!--inicio:Columna-->
+          <div class="col-lg-6 mb-3 py-lg-3 pe-lg-8 d-flex align-items-center">
+            <img src="./assets/media/stock/900x600/45.jpg" class="rounded mw-100" alt="">
+          </div>
+          <!--fin:Columna-->
+        </div>
+        <!--fin:Fila-->
+      </div>
+      <!--fin:Menú de tableros-->
+    </div>
+  </div>

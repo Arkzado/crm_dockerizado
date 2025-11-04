@@ -1,0 +1,144 @@
+
+<!--begin::Modal content CREATE-->
+<div class="modal-content">
+    <!--begin::Modal header-->
+    <div class="modal-header" id="kt_modal_add_user_header">
+        <!--begin::Modal title-->
+        <h2 class="fw-bolder">Agregar Actividad</h2>
+
+        <!--end::Modal title-->
+        <!--begin::Close-->
+        <div class="btn btn-icon btn-sm btn-active-icon-primary" data-kt-users-modal-action="close"
+            (click)="modal.dismiss()">
+            <!--begin::Svg Icon | path: icons/duotune/arrows/arr061.svg-->
+            <span class="svg-icon svg-icon-1">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+                    <rect opacity="0.5" x="6" y="17.3137" width="16" height="2" rx="1" transform="rotate(-45 6 17.3137)"
+                        fill="currentColor" />
+                    <rect x="7.41422" y="6" width="16" height="2" rx="1" transform="rotate(45 7.41422 6)"
+                        fill="currentColor" />
+                </svg>
+            </span>
+            <!--end::Svg Icon-->
+        </div>
+        <!--end::Close-->
+    </div>
+    <!--end::Modal header-->
+    <!--begin::Modal body-->
+    <div class="modal-body scroll-y mx-5 my-7">
+        <!--begin::Form-->
+        <form id="kt_modal_add_user_form" class="form" action="#">
+            <!--begin::Scroll-->
+            <div class="d-flex flex-column scroll-y me-n7 pe-7" id="kt_modal_add_user_scroll" data-kt-scroll="true" data-kt-scroll-activate="{default: false, lg: true}" data-kt-scroll-max-height="auto" data-kt-scroll-dependencies="#kt_modal_add_user_header" data-kt-scroll-wrappers="#kt_modal_add_user_scroll" data-kt-scroll-offset="300px">
+                <ul class="nav nav-custom nav-tabs nav-line-tabs nav-line-tabs-2x border-0 fs-4 fw-semibold mb-5">
+                
+                <!--begin:::Tab item-->
+               
+
+                <!--end:::Tab item-->
+                <!--begin:::Tab item-->
+                
+                <!--end:::Tab item-->
+            </ul>
+
+    <div class="tab-content">
+    <!-- Primer tab -->
+    <div class="tab-pane fade show active" id="kt_ecommerce_add_product_general" role="tabpanel">   
+        <div class="d-flex flex-column scroll-y">
+            <!--begin::Input group-->
+            <div class="fv-row row mb-7">
+                <!-- Nombre, Apellido y Segmento -->
+                <div class="col-4">
+                    <label class="required fw-bold fs-6 mb-2">Asunto de la Actividad:</label>
+                    <input type="text" name="subject" class="form-control form-control-solid mb-3 mb-lg-0"
+                        placeholder="Razon de la actividad" [(ngModel)]="subject" />
+                </div>
+
+            
+                <div class="col-4">
+                    <label class="required fw-bold fs-6 mb-2">Tipo de actividad:</label>
+                    <select class="form-control form-select-solid fw-bolder" name="type"
+                        [(ngModel)]="type" placeholder="Selec. Segment">
+                        
+                        <option value="Llamada">Llamada</option>
+                        <option value="Recordatorio">Recordatorio</option>
+                        <option value="Reunion">Reunion</option>
+                         
+
+                    </select>
+                </div>
+
+                <div class="col-4">
+                    <label class="required fw-bold fs-6 mb-2">Cliente:</label>
+                    <select class="form-control form-select-solid fw-bolder" name="client_id"
+                        [(ngModel)]="client_id" placeholder="">
+                        
+                    <ng-container *ngFor="let client of clients">
+                        <option [value]="client.id">{{client.full_name}}</option>
+                    
+                    
+                    </ng-container>
+                         
+
+                    </select>
+                </div>
+            </div>
+            <div class="fv-row row mb-7">
+                <!-- Tipo + numero documento y origen -->
+                <div class="col-4">
+                    <label class="required fw-bold fs-6 mb-2">Fecha y hora limite:</label>
+                    <input type="date" class="form-control form-control-lg form-control-solid" name="due_date"
+                            [(ngModel)]="due_date" />
+                </div>
+
+                <div class="col-4">
+                    <label class="required fw-bold fs-6 mb-2">Notas adcionales (Opcional):</label>
+                    <input type="text" name="notes" [(ngModel)]="notes"
+                        class="form-control form-control-solid mb-3 mb-lg-0" placeholder="" />
+                </div>
+
+                <div class="col-4">
+                    <label class="required fw-bold fs-6 mb-2">Usuario Responsable:</label>
+                    <select class="form-control form-select-solid fw-bolder" name="user_id"
+                        [(ngModel)]="user_id" placeholder="">
+                        
+                    <ng-container *ngFor="let user of users">
+                        <option [value]="user.id">{{user.full_name}}</option>
+                    
+                    
+                    </ng-container>
+                         
+
+                    </select>
+                </div>
+            </div>
+           
+            
+
+        </div>
+    </div> 
+    <!-- Segundo tab o avanced -->
+
+        </div> <!-- /.tab-content -->
+    </div> <!-- /#kt_modal_add_user_scroll (end scroll wrapper) -->
+
+            <!--end::Scroll-->
+
+            <!--begin::Actions-->
+            <div class="text-center pt-15">
+                <button type="reset" class="btn btn-light me-3" (click)="modal.dismiss()">Cerrar</button>
+                <button type="button" (click)="store()" class="btn btn-primary" data-kt-users-modal-action="submit">
+                    <span class="indicator-label">Registrar</span>
+
+                    <span class="spinner-border spinner-border-sm align-middle ms-2" *ngIf="isLoading | async"></span>
+                    <!-- <span class="indicator-progress">Please wait...
+                    <span class="spinner-border spinner-border-sm align-middle ms-2"></span></span> -->
+                </button>
+            </div>
+            <!--end::Actions-->
+        </form>
+        <!--end::Form-->
+    </div>
+    <!--end::Modal body-->
+</div>
+<!--end::Modal content CREATE-->

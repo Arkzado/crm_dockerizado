@@ -1,0 +1,14 @@
+// Reutilizamos los estilos que ya creamos antes
+@import "../../../../app/modules/roles/list-roles/list-roles.component.scss";
+
+.permission-group {
+    margin-bottom: 1.5rem;
+}
+
+.group-title {
+    font-weight: 600;
+    text-transform: capitalize;
+    border-bottom: 1px solid #eff2f5;
+    padding-bottom: 8px;
+    margin-bottom: 12px;
+}

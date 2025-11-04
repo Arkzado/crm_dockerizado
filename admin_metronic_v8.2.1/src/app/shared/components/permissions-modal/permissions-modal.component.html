@@ -1,0 +1,19 @@
+<div class="modal-header">
+    <h4 class="modal-title">Permisos para: <strong>{{ ROL.name }}</strong></h4>
+    <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss()"></button>
+</div>
+
+<div class="modal-body">
+    <div *ngFor="let group of groupedPermissions | keyvalue" class="permission-group">
+        <h5 class="group-title">{{ group.key | titlecase }}</h5>
+        <div class="permisos-container">
+            <span *ngFor="let action of group.value" class="permiso-tag">
+                {{ action }}
+            </span>
+        </div>
+    </div>
+</div>
+
+<div class="modal-footer">
+    <button type="button" class="btn btn-light" (click)="modal.close()">Cerrar</button>
+</div>

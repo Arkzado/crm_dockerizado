@@ -1,0 +1,168 @@
+<div class="card">
+  <!--begin::Card header-->
+  <div class="card-header border-0 pt-6">
+    <!--begin::Card title-->
+    <div class="card-title">
+
+      <!--begin::Search-->
+      <div class="row align-items-center">
+        <div class="col-3">
+          <div class="d-flex align-items-center position-relative my-1">
+            
+           
+              
+      </div>
+
+        </div>
+      
+        
+      </div>
+      
+      <!--end::Search-->
+    </div>
+    <!--begin::Card title-->
+    
+    <!--begin::Card toolbar-->
+    <div class="card-toolbar">
+      <!--begin::Toolbar-->
+      <div class="d-flex justify-content-end" data-kt-customer-table-toolbar="base">
+        <!--begin::Add customer-->
+       
+        <!--end::Add customer-->
+      </div>
+      <!--end::Toolbar-->
+
+      <!--begin::Group actions-->
+      <div class="d-flex justify-content-end align-items-center d-none" data-kt-customer-table-toolbar="selected">
+        <div class="fw-bold me-5">
+          <span class="me-2" data-kt-customer-table-select="selected_count"></span>
+          Selected
+        </div>
+
+        <button type="button" class="btn btn-danger" data-kt-customer-table-select="delete_selected">
+          Delete Selected
+        </button>
+      </div>
+      <!--end::Group actions-->
+    </div>
+    <!--end::Card toolbar-->
+  </div>
+  <!--end::Card header-->
+
+    <div class="card-body pt-0">
+        <!--begin::Table-->
+        <div id="kt_customers_table_wrapper" class="dt-container dt-bootstrap5 dt-empty-footer">
+        <div id="" class="table-responsive">
+      <table class="table align-middle table-row-dashed fs-6 gy-5 dataTable" id="kt_customers_table"
+            style="width: 1199.5px">
+            <thead>
+                <tr class="text-start text-gray-500 fw-bold fs-7 text-uppercase gs-0" role="row">
+                <th class="min-w-125px dt-orderable-asc dt-orderable-desc" data-dt-column="1" rowspan="1" colspan="1"
+                    aria-label="Customer Name: Activate to sort" tabindex="0">
+                    <span class="dt-column-title" role="button">Tarea</span><span class="dt-column-order"></span>
+                </th>
+
+                <th class="min-w-125px dt-orderable-asc dt-orderable-desc" data-dt-column="1" rowspan="1" colspan="1"
+                    aria-label="Customer Name: Activate to sort" tabindex="0">
+                    <span class="dt-column-title" role="button">Fecha de finalizacion</span><span
+                    class="dt-column-order"></span>
+                </th>
+
+                <th class="min-w-125px dt-orderable-asc dt-orderable-desc" data-dt-column="1" rowspan="1" colspan="1"
+                    aria-label="Customer Name: Activate to sort" tabindex="0">
+                    <span class="dt-column-title" role="button">Tipo de tarea</span><span
+                    class="dt-column-order"></span>
+                </th>
+
+                <th class="min-w-125px dt-orderable-asc dt-orderable-desc" data-dt-column="1" rowspan="1" colspan="1"
+                    aria-label="Customer Name: Activate to sort" tabindex="0">
+                    <span class="dt-column-title" role="button">Comentarios de la tarea</span><span
+                    class="dt-column-order"></span>
+                </th>
+
+                <th class="min-w-125px dt-orderable-asc dt-orderable-desc" data-dt-column="1" rowspan="1" colspan="1"
+                    aria-label="Customer Name: Activate to sort" tabindex="0">
+                    <span class="dt-column-title" role="button">Estado</span><span class="dt-column-order"></span>
+                </th>
+
+                
+                <th class="text-end min-w-70px dt-orderable-none" data-dt-column="6" rowspan="1" colspan="1"
+                    aria-label="Actions">
+                    <span class="dt-column-title">Completar tarea</span><span class="dt-column-order"></span>
+                </th>
+
+                </tr>
+            </thead>
+            <tbody class="fw-semibold text-gray-600">
+                <!-- Loading -->
+                <tr *ngIf="(isLoading$ | async)">
+                  <td colspan="7" class="text-center py-6">
+                    <div class="spinner-border text-primary" role="status"><span class="visually-hidden">Loading...</span></div>
+                  </td>
+                </tr>
+
+                <!-- Rows when ACTY has items -->
+                <ng-container *ngIf="ACTIVIDADES?.length > 0; else noActivities">
+                  <ng-container *ngFor="let actividad of ACTIVIDADES">
+                    <tr>
+                
+
+                    <td>
+                    {{ actividad.subject }} 
+                    </td>
+
+                    <td>
+                    {{ actividad.due_date }}
+                    </td>
+
+                    <td>
+                    {{ actividad.type }}
+                    </td>
+
+                    <td>
+                    {{ actividad.notes }}
+                    </td>
+
+                    <td >
+                      <span class="badge badge-light-warning" *ngIf="actividad.status == 1">Pendiente</span>
+                      <span class="badge badge-light-success" *ngIf="actividad.status == 2">Completado</span>
+
+                    </td>
+
+                    
+
+                    <td class="text-end min-w-70px">
+                      <div class="d-flex justify-content-end gap-2">
+
+                <a href="#" *ngIf="actividad.status==1" onclick="return false;" (click)="completeActivity(actividad.id)"
+                  class="btn btn-icon btn-bg-light btn-active-color-success btn-sm" title="Aprobar">
+                  <i class="ki-duotone ki-check fs-2 text-success"><span class="path1"></span><span class="path2"></span></i>
+                </a>
+
+                <a href="#" *ngIf="actividad.status==2" onclick="return false;" (click)="deleteActivity(actividad.id)"
+                  class="btn btn-icon btn-bg-light btn-active-color-success btn-sm" title="Aprobar">
+                  <i class="ki-duotone ki-trash fs-2 text-danger"><span class="path1"></span><span class="path2"></span></i>
+                </a>
+                      </div>
+                    </td>
+                    </tr>
+                  </ng-container>
+                </ng-container>
+
+                <!-- Empty state -->
+                <ng-template #noActivities>
+                  <tr>
+                    <td colspan="6" class="text-center text-gray-600 py-4">No hay tareas para mostrar.</td>
+                  </tr>
+                </ng-template>
+            </tbody>
+            <tfoot></tfoot>
+            </table>
+        </div>
+        <ngb-pagination [collectionSize]="totalPages" [(page)]="currentPage" [pageSize]="25" [rotate]="true"
+            [boundaryLinks]="true" (pageChange)="loadPage($event)"></ngb-pagination>
+        </div>
+        <!--end::Table-->
+    </div>
+  
+</div>
