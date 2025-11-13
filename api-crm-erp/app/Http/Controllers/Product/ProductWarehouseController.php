@@ -21,6 +21,7 @@ class ProductWarehouseController extends Controller
      */
     public function store(Request $request)
     {
+         $this->authorize("create",ProductWarehouse::class);
         $product_warehouse = ProductWarehouse::create([
             "product_id" => $request->product_id,
             "unit_id" => $request->unit_id,
@@ -52,6 +53,7 @@ class ProductWarehouseController extends Controller
      */
     public function update(Request $request, string $id)
     {
+         $this->authorize("update",ProductWarehouse::class);
         $product_warehouse = ProductWarehouse::findOrFail($id);
 
         $product_warehouse->update([
@@ -77,6 +79,7 @@ class ProductWarehouseController extends Controller
      */
     public function destroy(string $id)
     {
+         $this->authorize("delete",ProductWarehouse::class);
         $product_warehouse = ProductWarehouse::findOrFail($id);
         $product_warehouse->delete();
         return response()->json([

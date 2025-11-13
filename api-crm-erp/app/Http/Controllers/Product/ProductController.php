@@ -27,6 +27,7 @@ class ProductController extends Controller
      */
     public function index(Request $request)
     {
+        $this->authorize("viewAny",Product::class);
         $search = $request->search;
         $product_categorie_id = $request->product_categorie_id;
         $disponibilidad = $request->disponibilidad;
@@ -38,22 +39,13 @@ class ProductController extends Controller
         $unit_warehouse = $request->unit_warehouse;
         $state_stock = $request->state_stock;
         // where("title","like","%".$search."%")
-        $products = Product::filterAdvance(
-            $search,
-            $product_categorie_id,
-            $disponibilidad,
-            $tax_selected,
-            $sucursale_price_multiple,
-            $client_segment_price_multiple,
-            $almacen_warehouse,
-            $unit_warehouse,
-            $state_stock
-        )
-            ->orderBy("id", "desc")
-            ->paginate(25);
+        $products = Product::filterAdvance($search,$product_categorie_id,$disponibilidad,$tax_selected,
+        $sucursale_price_multiple,$client_segment_price_multiple,$almacen_warehouse,$unit_warehouse,$state_stock)
+                    ->orderBy("id","desc")
+                    ->paginate(25);
 
-        $num_products_agotado = Product::where("state_stock", 3)->count();
-        $num_products_por_agotar = Product::where("state_stock", 2)->count();
+        $num_products_agotado = Product::where("state_stock",3)->count();
+        $num_products_por_agotar = Product::where("state_stock",2)->count();
 
         return response()->json([
             "total" => $products->total(),
@@ -63,17 +55,16 @@ class ProductController extends Controller
         ]);
     }
 
-    public function config()
-    {
-        $almacenes = Warehouse::where("state", 1)->get();
-        $sucursales = Sucursale::where("state", 1)->get();
-        $units = Unit::where("state", 1)->get();
-        $segments_clients = ClientSegment::where("state", 1)->get();
-        $categories = ProductCategorie::where("state", 1)->get();
-        $providers = Provider::where("state", 1)->get();
+    public function config() {
+        $almacens = Warehouse::where("state",1)->get();
+        $sucursales = Sucursale::where("state",1)->get();
+        $units = Unit::where("state",1)->get();
+        $segments_clients = ClientSegment::where("state",1)->get();
+        $categories = ProductCategorie::where("state",1)->get();
+        $providers = Provider::where("state",1)->get();
 
         return response()->json([
-            "almacenes" => $almacenes,
+            "almacens" => $almacens,
             "sucursales" => $sucursales,
             "units" => $units,
             "segments_clients" => $segments_clients,
@@ -82,8 +73,7 @@ class ProductController extends Controller
         ]);
     }
 
-    public function export_products(Request $request)
-    {
+    public function export_products(Request $request) {
 
         $search = $request->get("search");
         $product_categorie_id = $request->get("product_categorie_id");
@@ -96,42 +86,34 @@ class ProductController extends Controller
         $unit_warehouse = $request->get("unit_warehouse");
         $state_stock = $request->get("state_stock");
 
-        $products = Product::filterAdvance(
-            $search,
-            $product_categorie_id,
-            $disponibilidad,
-            $tax_selected,
-            $sucursale_price_multiple,
-            $client_segment_price_multiple,
-            $almacen_warehouse,
-            $unit_warehouse,
-            $state_stock
-        )
-            ->orderBy("id", "desc")->get();
+        $products = Product::filterAdvance($search,$product_categorie_id,$disponibilidad,$tax_selected,
+        $sucursale_price_multiple,$client_segment_price_multiple,$almacen_warehouse,$unit_warehouse,$state_stock)
+                    ->orderBy("id","desc")->get();
 
-        return Excel::download(new DownloadProduct($products), "productos_descargados.xlsx");
+        return Excel::download(new DownloadProduct($products),"productos_descargados.xlsx");
     }
     /**
      * Store a newly created resource in storage.
      */
     public function store(Request $request)
     {
-        $is_exits_product = Product::where("title", $request->title)->first();
-        if ($is_exits_product) {
+        $this->authorize("create",Product::class);
+        $is_exits_product = Product::where("title",$request->title)->first();
+        if($is_exits_product){
             return response()->json([
                 "message" => 403,
                 "message_text" => "El nombre del producto ya existe"
             ]);
         }
 
-        if ($request->hasFile("product_imagen")) {
-            $path = Storage::putFile("products", $request->file("product_imagen"));
+        if($request->hasFile("product_imagen")){
+            $path = Storage::putFile("products",$request->file("product_imagen"));
             $request->request->add(["imagen" => $path]);
         }
 
         $product = Product::create($request->all());
 
-        $WAREHOUSES_PRODUCT = json_decode($request->WAREHOUSES_PRODUCT, true);
+        $WAREHOUSES_PRODUCT = json_decode($request->WAREHOUSES_PRODUCT,true);
         foreach ($WAREHOUSES_PRODUCT as $key => $WAREHOUSES_PROD) {
             ProductWarehouse::create([
                 "product_id" => $product->id,
@@ -140,7 +122,7 @@ class ProductController extends Controller
                 "stock" => $WAREHOUSES_PROD["quantity"]
             ]);
         }
-        $WALLETS_PRODUCT = json_decode($request->WALLETS_PRODUCT, true);
+        $WALLETS_PRODUCT = json_decode($request->WALLETS_PRODUCT,true);
         foreach ($WALLETS_PRODUCT as $key => $WALLETS_PROD) {
             ProductWallet::create([
                 "product_id" => $product->id,
@@ -156,14 +138,14 @@ class ProductController extends Controller
         ]);
     }
 
-    public function import_product(Request $request)
+    public function import_product(Request $request) 
     {
         $request->validate([
             "import_file" => 'required|file|mimes:xls,xlsx,csv'
         ]);
         $path = $request->file("import_file");
 
-        $data = Excel::import(new ProductsImport, $path);
+        $data = Excel::import(new ProductsImport,$path);
 
         return response()->json([
             "message" => 200
@@ -174,6 +156,7 @@ class ProductController extends Controller
      */
     public function show(string $id)
     {
+        $this->authorize("view",Product::class);
         $product = Product::findOrFail($id);
 
         return response()->json([
@@ -186,9 +169,10 @@ class ProductController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        $is_exits_product = Product::where("title", $request->title)
-            ->where("id", "<>", $id)->first();
-        if ($is_exits_product) {
+        $this->authorize("update",Product::class);
+        $is_exits_product = Product::where("title",$request->title)
+                            ->where("id","<>",$id)->first();
+        if($is_exits_product){
             return response()->json([
                 "message" => 403,
                 "message_text" => "El nombre del producto ya existe"
@@ -196,14 +180,14 @@ class ProductController extends Controller
         }
         $product = Product::findOrFail($id);
 
-        if ($request->hasFile("product_imagen")) {
-            if ($product->imagen) {
+        if($request->hasFile("product_imagen")){
+            if($product->imagen){
                 Storage::delete($product->imagen);
             }
-            $path = Storage::putFile("products", $request->file("product_imagen"));
+            $path = Storage::putFile("products",$request->file("product_imagen"));
             $request->request->add(["imagen" => $path]);
         }
-
+       
         $product->update($request->all());
         return response()->json([
             "message" => 200,
@@ -215,6 +199,7 @@ class ProductController extends Controller
      */
     public function destroy(string $id)
     {
+        $this->authorize("delete",Product::class);
         $product = Product::findOrFail($id);
         // VALIDACION POR PROFORMA
         $product->delete();
