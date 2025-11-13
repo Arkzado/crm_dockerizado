@@ -14,7 +14,7 @@ class ActivityController extends Controller
 
         $id = $request->id;
 
-        $actividades = Activity::where("user_id", $id)->join('clients','activities.client_id','=','clients.id')->orderBy("due_date","asc")->get();
+        $actividades = Activity::where("user_id", $id)->join('clients','activities.client_id','=','clients.id')->select('activities.*', 'clients.full_name as client_name')->orderBy("due_date","asc")->get();
         
         return response()->json(
             [   
@@ -29,6 +29,7 @@ class ActivityController extends Controller
                     "status" => $actividad->status,
                     "user_id" => $actividad->user_id,
                     "client_id" => $actividad->client_id,
+                    "client_name" => $actividad->client_name,
                     "created_at" => $actividad->created_at,
                     "updated_at" => $actividad->updated_at,
                     "deleted_at" => $actividad->deleted_at,

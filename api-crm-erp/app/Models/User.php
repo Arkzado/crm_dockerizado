@@ -3,6 +3,7 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+use App\Models\Configuration\Sucursale;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -61,7 +62,10 @@ class User extends Authenticatable implements JWTSubject
     public function role(){
         return $this->belongsTo(Role::class);
     }
-
+public function sucursale(){
+        
+        return $this->belongsTo(Sucursale::class, 'sucursal_id')->withTrashed();
+    }
 
     /**
      * Get the identifier that will be stored in the subject claim of the JWT.

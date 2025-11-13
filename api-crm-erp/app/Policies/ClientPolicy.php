@@ -3,16 +3,17 @@
 namespace App\Policies;
 
 use App\Models\User;
+use App\Models\Client\Client;
 use Illuminate\Auth\Access\Response;
 
-class UserPolicy
+class ClientPolicy
 {
     /**
      * Determine whether the user can view any models.
      */
     public function viewAny(User $user): bool
     {
-        if($user->can('register_user')){
+        if($user->can('register_clientes')){
             return true;
         }
         return false;
@@ -21,7 +22,7 @@ class UserPolicy
     /**
      * Determine whether the user can view the model.
      */
-    public function view(User $user, User $model): bool
+    public function view(User $user, Client $client): bool
     {
         //
     }
@@ -31,7 +32,7 @@ class UserPolicy
      */
     public function create(User $user): bool
     {
-        if($user->can('register_user')){
+        if($user->can('register_clientes')){
             return true;
         }
         return false;
@@ -40,9 +41,9 @@ class UserPolicy
     /**
      * Determine whether the user can update the model.
      */
-    public function update(User $user, User $model = null): bool
+    public function update(User $user, Client $client = null): bool
     {
-        if($user->can('edit_user')){
+        if($user->can('edit_clientes')){
             return true;
         }
         return false;
@@ -51,9 +52,9 @@ class UserPolicy
     /**
      * Determine whether the user can delete the model.
      */
-    public function delete(User $user, User $model = null): bool
+    public function delete(User $user, Client $client = null): bool
     {
-        if($user->can('delete_user')){
+        if($user->can('delete_clientes')){
             return true;
         }
         return false;
@@ -62,7 +63,7 @@ class UserPolicy
     /**
      * Determine whether the user can restore the model.
      */
-    public function restore(User $user, User $model): bool
+    public function restore(User $user, Client $client): bool
     {
         //
     }
@@ -70,7 +71,7 @@ class UserPolicy
     /**
      * Determine whether the user can permanently delete the model.
      */
-    public function forceDelete(User $user, User $model): bool
+    public function forceDelete(User $user, Client $client): bool
     {
         //
     }

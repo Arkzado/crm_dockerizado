@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Configuration\Sucursale;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Spatie\Permission\Models\Role;
@@ -14,56 +15,63 @@ class UserAccessController extends Controller
      */
     public function index(Request $request)
     {
+        $this -> authorize("viewAny", User::class);
         $search = $request->get("search");
 
-        $users = User::where("name","like","%".$search."%")->orderBy("id","desc")->paginate(25);
+        $users = User::with(['role', 'sucursale']) // Carga las relaciones aquí
+            ->where("name", "like", "%" . $search . "%")
+            ->orderBy("id", "desc")
+            ->paginate(25);
 
         return response()->json([
             "total" => $users->total(),
-            "users" => $users->map(function($user) {
+            "users" => $users->map(function ($user) {
                 return [
-                     "mensaje" => env("APP_URL")."storage/".$user->avatar,
+                    "mensaje" => env("APP_URL") . "storage/" . $user->avatar,
                     "id" => $user->id,
                     'name' => $user->name,
                     'email' => $user->email,
                     "surname" => $user->surname,
-                    "full_name" => $user->name.' '.$user->surname,
-                    "phone" =>  $user->phone,
+                    "full_name" => $user->name . ' ' . $user->surname,
+                    "phone" => $user->phone,
                     "role_id" => $user->role_id,
                     "role" => $user->role,
                     "roles" => $user->roles,
                     "sucursal_id" => $user->sucursal_id,
+                    "sucursale" => $user->sucursale,
                     "type_document" => $user->type_document,
                     "n_document" => $user->n_document,
                     "gender" => $user->gender,
                     "address" => $user->address,
-                    "avatar" => $user->avatar ? env("APP_URL")."storage/".$user->avatar : 'https://cdn-icons-png.flaticon.com/512/3135/3135715.png',
+                    "avatar" => $user->avatar ? env("APP_URL") . "storage/" . $user->avatar : 'https://cdn-icons-png.flaticon.com/512/3135/3135715.png',
                     "created_format_at" => $user->created_at->format("Y-m-d h:i A"),
                 ];
             }),
         ]);
     }
 
-     public function listUsers()
+    public function listUsers()
     {
-        
 
-        $users = User::orderBy("id","desc")->get();
+
+        $users = User::orderBy("id", "desc")->get();
 
         return response()->json([
-            "users" => $users->map(function($user) {
+            "users" => $users->map(function ($user) {
                 return [
                     "id" => $user->id,
-                    "full_name" => $user->name.' '.$user->surname,
+                    "full_name" => $user->name . ' ' . $user->surname,
                 ];
             }),
         ]);
     }
 
 
-    public function config(){
+    public function config()
+    {
         return response()->json([
-            "roles" => Role::all(), 
+            "roles" => Role::all(),
+            "sucursales" => Sucursale::where("state", 1)->get(),
         ]);
     }
     /**
@@ -72,20 +80,21 @@ class UserAccessController extends Controller
     public function store(Request $request)
     {
         //
-        $USER_EXITS = User::where("email",$request->email)->first();
-        if($USER_EXITS){
+        $this -> authorize("create", User::class);
+        $USER_EXITS = User::where("email", $request->email)->first();
+        if ($USER_EXITS) {
             return response()->json([
                 "message" => 403,
                 "message_text" => "EL USUARIO YA EXISTE"
             ]);
         }
 
-        if($request->hasFile("imagen")){
-            $path = Storage::putFile("users",$request->file("imagen"));
+        if ($request->hasFile("imagen")) {
+            $path = Storage::putFile("users", $request->file("imagen"));
             $request->request->add(["avatar" => $path]);
         }
 
-        if($request->password){
+        if ($request->password) {
             $request->request->add(["password" => bcrypt($request->password)]);
         }
 
@@ -95,13 +104,13 @@ class UserAccessController extends Controller
         return response()->json([
             "message" => 200,
             "user" => [
-                 "mensaje" => env("APP_URL")."storage/".$user->avatar,
+                "mensaje" => env("APP_URL") . "storage/" . $user->avatar,
                 "id" => $user->id,
                 'name' => $user->name,
                 'email' => $user->email,
                 "surname" => $user->surname,
-                "full_name" => $user->name.' '.$user->surname,
-                "phone" =>  $user->phone,
+                "full_name" => $user->name . ' ' . $user->surname,
+                "phone" => $user->phone,
                 "role_id" => $user->role_id,
                 "role" => $user->role,
                 "roles" => $user->roles,
@@ -110,7 +119,7 @@ class UserAccessController extends Controller
                 "n_document" => $user->n_document,
                 "gender" => $user->gender,
                 "address" => $user->address,
-                "avatar" => $user->avatar ? env("APP_URL")."storage/".$user->avatar : 'https://cdn-icons-png.flaticon.com/512/3135/3135715.png',
+                "avatar" => $user->avatar ? env("APP_URL") . "storage/" . $user->avatar : 'https://cdn-icons-png.flaticon.com/512/3135/3135715.png',
                 "created_format_at" => $user->created_at->format("Y-m-d h:i A"),
             ]
         ]);
@@ -130,9 +139,10 @@ class UserAccessController extends Controller
     public function update(Request $request, string $id)
     {
         //
-        $USER_EXITS = User::where("email",$request->email)
-                        ->where("id","<>",$id)->first();
-        if($USER_EXITS){
+        $this -> authorize("update", User::class);
+        $USER_EXITS = User::where("email", $request->email)
+            ->where("id", "<>", $id)->first();
+        if ($USER_EXITS) {
             return response()->json([
                 "message" => 403,
                 "message_text" => "EL USUARIO YA EXISTE"
@@ -141,19 +151,19 @@ class UserAccessController extends Controller
 
         $user = User::findOrFail($id);
 
-        if($request->hasFile("imagen")){
-            if($user->avatar){
+        if ($request->hasFile("imagen")) {
+            if ($user->avatar) {
                 Storage::delete($user->avatar);
             }
-            $path = Storage::putFile("users",$request->file("imagen"));
+            $path = Storage::putFile("users", $request->file("imagen"));
             $request->request->add(["avatar" => $path]);
         }
 
-        if($request->password){
+        if ($request->password) {
             $request->request->add(["password" => bcrypt($request->password)]);
         }
 
-        if($request->role_id != $user->role_id){
+        if ($request->role_id != $user->role_id) {
             // EL VIEJO ROL
             $role_old = Role::findOrFail($user->role_id);
             $user->removeRole($role_old);
@@ -171,8 +181,8 @@ class UserAccessController extends Controller
                 'name' => $user->name,
                 'email' => $user->email,
                 "surname" => $user->surname,
-                "full_name" => $user->name.' '.$user->surname,
-                "phone" =>  $user->phone,
+                "full_name" => $user->name . ' ' . $user->surname,
+                "phone" => $user->phone,
                 "role_id" => $user->role_id,
                 "role" => $user->role,
                 "roles" => $user->roles,
@@ -181,7 +191,7 @@ class UserAccessController extends Controller
                 "n_document" => $user->n_document,
                 "gender" => $user->gender,
                 "address" => $user->address ? $user->address : "error",
-                "avatar" => $user->avatar ? env("APP_URL")."storage/".$user->avatar : 'https://cdn-icons-png.flaticon.com/512/3135/3135715.png',
+                "avatar" => $user->avatar ? env("APP_URL") . "storage/" . $user->avatar : 'https://cdn-icons-png.flaticon.com/512/3135/3135715.png',
                 "created_format_at" => $user->created_at->format("Y-m-d h:i A"),
             ]
         ]);
@@ -192,8 +202,10 @@ class UserAccessController extends Controller
      */
     public function destroy(string $id)
     {
+
+        $this -> authorize("delete", User::class);
         $user = User::findOrFail($id);
-        if($user->avatar){
+        if ($user->avatar) {
             Storage::delete($user->avatar);
         }
         $user->delete();

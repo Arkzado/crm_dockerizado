@@ -58,7 +58,7 @@ export class CrudComponent implements OnInit, AfterViewInit, OnDestroy {
         "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
       processing: true,
       language: {
-        processing: '<span class="spinner-border spinner-border-sm align-middle"></span> Loading...'
+        processing: '<span class="spinner-border spinner-border-sm align-middle"></span> Cargando...'
       }, ...this.datatableConfig
     };
     this.renderActionColumn();

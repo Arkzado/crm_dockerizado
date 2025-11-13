@@ -75,22 +75,39 @@ export const SIDEBAR: any = [
         name: 'Eliminar',
         permiso: 'delete_product',
       },
-      // {
-      //   name: 'Ver billetera de precios',
-      //   permiso: 'show_wallet_price_product',
-      // },
-      // {
-      //   name: 'Nuevo precio',
-      //   permiso: 'register_wallet_price_product',
-      // },
-      // {
-      //   name: 'Editar precio',
-      //   permiso: 'edit_wallet_price_product',
-      // },
-      // {
-      //   name: 'Eliminar precio',
-      //   permiso: 'delete_wallet_price_product',
-      // },
+      {
+        name: 'Ver billetera de precios',
+        permiso: 'show_wallet_price_product',
+      },
+      {
+        name: 'Nuevo precio',
+        permiso: 'register_wallet_price_product',
+      },
+      {
+        name: 'Editar precio',
+        permiso: 'edit_wallet_price_product',
+      },
+      {
+        name: 'Eliminar precio',
+        permiso: 'delete_wallet_price_product',
+      },
+
+         {
+        name: 'Ver existencias',
+        permiso: 'show_existencia_product',
+      },
+      {
+        name: 'Nueva existencia',
+        permiso: 'register_existencia_product',
+      },
+      {
+        name: 'Editar existencia',
+        permiso: 'edit_existencia_product',
+      },
+      {
+        name: 'Eliminar existencia',
+        permiso: 'delete_existencia_product',
+      },
     ],
   },
   {

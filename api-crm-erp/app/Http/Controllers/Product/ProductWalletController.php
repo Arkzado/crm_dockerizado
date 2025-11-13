@@ -21,6 +21,7 @@ class ProductWalletController extends Controller
      */
     public function store(Request $request)
     {
+         $this->authorize("create",ProductWallet::class);
         $product_wallet = ProductWallet::create([
             "product_id" => $request->product_id,
             "unit_id" => $request->unit_id,
@@ -56,6 +57,7 @@ class ProductWalletController extends Controller
      */
     public function update(Request $request, string $id)
     {
+        $this->authorize("update",ProductWallet::class);
         $product_wallet = ProductWallet::findOrFail($id);
 
         $product_wallet->update([
@@ -85,6 +87,7 @@ class ProductWalletController extends Controller
      */
     public function destroy(string $id)
     {
+        $this->authorize("delete",ProductWallet::class);
         $product_wallet = ProductWallet::findOrFail($id);
         $product_wallet->delete();
 

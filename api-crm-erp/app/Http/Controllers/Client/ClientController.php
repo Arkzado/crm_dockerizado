@@ -2,82 +2,53 @@
 
 namespace App\Http\Controllers\Client;
 
-use App\Http\Controllers\Controller;
+use App\Models\User;
 use Illuminate\Http\Request;
 use App\Models\Client\Client;
-use App\Http\Resources\Client\ClientCollection;
-use App\Http\Resources\Client\ClientResource;
 use App\Imports\ClientsImport;
 use App\Exports\Client\ExportClient;
+use App\Http\Controllers\Controller;
 use Maatwebsite\Excel\Facades\Excel;
-use App\Models\User;
 use App\Models\Configuration\ClientSegment;
+use App\Http\Resources\Client\ClientResource;
+use App\Http\Resources\Client\ClientCollection;
+
 class ClientController extends Controller
 {
-    
+    /**
+     * Display a listing of the resource.
+     */
     public function index(Request $request)
     {
+        $this->authorize("viewAny",Client::class);
         $search = $request->search;
         $client_segment_id = $request->client_segment_id;
         $type = $request->type;
         $asesor_id = $request->asesor_id;
-
-        
-
-        //where("full_name","like","%".$search."%")->
+        // where("full_name","like","%".$search."%")->
         $clients = Client::filterAdvance($search,$client_segment_id,$type,$asesor_id)->orderBy("id","desc")->paginate(25);
 
         return response()->json([
-            "total"=>$clients->total(), 
+            "total" => $clients->total(),
             "clients" => ClientCollection::make($clients),
         ]);
     }
 
     public function config(){
-        
 
-        $cliente_segments = ClientSegment::where("state",1)->get();
-        $asesores = User::whereHas("roles", function($q){
+        $client_segments = ClientSegment::where("state",1)->get();
+        $asesores = User::whereHas("roles",function($q) {
             $q->where("name","like","%asesor%");
-        })->/*where("state",1)*/get();
+        })->get();//->where("state",1)
         return response()->json([
-            "client_segments" => $cliente_segments,
-            "asesores" => $asesores->map(function($user){
+            "client_segments" => $client_segments,
+            "asesores" => $asesores->map(function($user) {
                 return [
                     "id" => $user->id,
                     "full_name" => $user->name.' '.$user->surname,
                 ];
-            }),
+            })
         ]);
-    }
-
-
-     public function store(Request $request)
-    {
-         $is_exits_client = Client::where("full_name",$request->full_name)->first();
-         if($is_exits_client)
-            {
-                return response()->json([
-                    "message"=> 403,
-                    "message_text"=>"El nombre del cliente ya existe",
-                ]);
-            }
-            if(!$request->asesor_id){
-                $request->request->add(["asesor_id" => auth()->user()->id]);
-            }
-            $request->request->add(["sucursale_id" => auth()->user()->sucursale_id]);
-            $client = Client::create($request->all());
-            return response()->json([
-                "message" => 200,
-                "client" => ClientResource::make($client),
-            ]);
-    
-    }
-
-
-    public function show(string $id)
-    {
-         //
     }
 
     public function export_clients(Request $request){
@@ -102,32 +73,71 @@ class ClientController extends Controller
             "message" => 200
         ]);
     }
-    public function update(Request $request, string $id)
+    /**
+     * Store a newly created resource in storage.
+     */
+    public function store(Request $request)
     {
-        $is_exits_client = Client::where("full_name",$request->full_name)
-            ->where("id","<>",$id)->first();
-        if($is_exits_client)
-        {
+        $this->authorize("create",Client::class);
+        $is_exits_client = Client::where("full_name",$request->full_name)->first();
+        if($is_exits_client){
             return response()->json([
                 "message" => 403,
-                "message_text" => "Los datos del cliente ya existen",
+                "message_text" => "Los datos del cliente ya existe"
             ]);
         }
-        $client = Client::findOrFail($id);
-        $client -> update($request->all());
+        if(!$request->asesor_id){
+            $request->request->add(["asesor_id" => auth()->user()->id]);
+        }
+        $request->request->add(["sucursale_id" => auth()->user()->sucursale_id]);
+        $client = Client::create($request->all());
         return response()->json([
             "message" => 200,
-            "client" =>  ClientResource::make($client),
+            "client" => ClientResource::make($client),
         ]);
     }
 
+    /**
+     * Display the specified resource.
+     */
+    public function show(string $id)
+    {
+        //
+    }
 
+    /**
+     * Update the specified resource in storage.
+     */
+    public function update(Request $request, string $id)
+    {
+        $this->authorize("update",Client::class);
+        $is_exits_client = Client::where("full_name",$request->full_name)
+                            ->where("id","<>",$id)->first();
+        if($is_exits_client){
+            return response()->json([
+                "message" => 403,
+                "message_text" => "Los datos del cliente ya existe"
+            ]);
+        }
+        $client = Client::findOrFail($id);
+        $client->update($request->all());
+        return response()->json([
+            "message" => 200,
+            "client" => ClientResource::make($client),
+        ]);
+    }
+
+    /**
+     * Remove the specified resource from storage.
+     */
     public function destroy(string $id)
     {
+        $this->authorize("delete",Client::class);
         $client = Client::findOrFail($id);
+        // VALIDACION POR PROFORMA
         $client->delete();
         return response()->json([
-            "message" => 200,   
+            "message" => 200,
         ]);
     }
 }

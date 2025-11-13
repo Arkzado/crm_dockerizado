@@ -11,6 +11,11 @@ class CalendarProformaController extends Controller
 {
     public function cronograma(Request $request) {
 
+        if(!auth('api')->user()->can('cronograma')){
+            return response()->json([
+                "message" => 'THIS ACTION IS UNAUTHORIZED',
+            ],403);
+        }
         $search_client = $request->search_client;
         $categorie_id = $request->categorie_id;
         $segment_client_id = $request->segment_client_id;

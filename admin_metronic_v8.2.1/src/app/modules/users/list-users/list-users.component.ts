@@ -15,7 +15,9 @@ export class ListUsersComponent {
   search:string = '';
   USERS:any = [];
   isLoading$:any;
+
   roles:any = [];
+  sucursales:any = [];
 
   totalPages:number = 0;
   currentPage:number = 1;
@@ -46,6 +48,7 @@ export class ListUsersComponent {
     this.usersService.configAll().subscribe((resp:any) => {
       console.log(resp);
       this.roles = resp.roles;
+      this.sucursales = resp.sucursales;
     })
   }
   loadPage($event:any){
@@ -55,7 +58,7 @@ export class ListUsersComponent {
   createUser(){
     const modalRef = this.modalService.open(CreateUserComponent,{centered:true, size: 'md'});
     modalRef.componentInstance.roles = this.roles;
-
+    modalRef.componentInstance.sucursales = this.sucursales;
     modalRef.componentInstance.UserC.subscribe((user:any) => {
       this.USERS.unshift(user);
     })
@@ -65,7 +68,7 @@ export class ListUsersComponent {
     const modalRef = this.modalService.open(EditUserComponent,{centered:true, size: 'md'});
     modalRef.componentInstance.USER_SELECTED = USER;
     modalRef.componentInstance.roles = this.roles;
-
+ modalRef.componentInstance.sucursales = this.sucursales;
     modalRef.componentInstance.UserE.subscribe((user:any) => {
       let INDEX = this.USERS.findIndex((user:any) => user.id == USER.id);
       if(INDEX != -1){
