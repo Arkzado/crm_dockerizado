@@ -16,4 +16,4 @@ RUN npm install
 COPY . .
 
 # 6. Exponer el puerto por defecto de Angular
-EXPOSE 4200
+EXPOSE 3200

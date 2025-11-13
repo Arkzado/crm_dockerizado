@@ -9,11 +9,11 @@ services:
     build:
       context: ./admin_metronic_v8.2.1
     ports:
-      - "4200:4200" # Mapea: Tu PC (localhost:4200) -> Contenedor (4200)
+      - "3200:3200" # Mapea: Tu PC (localhost:4200) -> Contenedor (4200)
     volumes:
       - ./admin_metronic_v8.2.1:/app  # Sincroniza tu código fuente
       - /app/node_modules              # Evita que node_modules de tu PC sobrescriba el del contenedor
-    command: ng serve --host 0.0.0.0
+    command: ng serve --host 0.0.0.0 --port 3200
 
   # ---
   # Servicio 2: Backend (Laravel)
@@ -23,7 +23,7 @@ services:
     build:
       context: ./api-crm-erp
     ports:
-      - "8000:8000" # Mapea: Tu PC (localhost:8000) -> Contenedor (8000)
+      - "8067:8067" # Mapea: Tu PC (localhost:8067) -> Contenedor (8067)
     volumes:
       - ./api-crm-erp:/var/www # Sincroniza tu código fuente
       - /var/www/vendor             # Protege la carpeta 'vendor' de la imagen
@@ -40,7 +40,7 @@ services:
   db:
     image: mariadb:10.4
     ports:
-      - "3306:3306" # Expone el puerto de MySQL a tu PC (opcional, útil para debug)
+      - "3367:3306" # Expone el puerto de MySQL a tu PC (opcional, útil para debug)
     environment:
       # Estas variables DEBEN COINCIDIR con tu archivo .env de Laravel
       MYSQL_DATABASE: crm_erp_admin
@@ -61,7 +61,7 @@ services:
   phpmyadmin:
     image: phpmyadmin/phpmyadmin
     ports:
-      - "8081:80" # Mapea: Tu PC (localhost:8081) -> Contenedor (80)
+      - "8069:80" # Mapea: Tu PC (localhost:8069) -> Contenedor (80)
     environment:
       PMA_HOST: db        # Le dice a phpMyAdmin que se conecte al servicio 'db'
       PMA_PORT: 3306
