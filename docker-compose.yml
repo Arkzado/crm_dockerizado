@@ -23,7 +23,7 @@ services:
     build:
       context: ./api-crm-erp
     ports:
-      - "8067:8067" # Mapea: Tu PC (localhost:8067) -> Contenedor (8067)
+      - "8096:8096" # Mapea: Tu PC (localhost:8060) -> Contenedor (8060)
     volumes:
       - ./api-crm-erp:/var/www # Sincroniza tu código fuente
       - /var/www/vendor             # Protege la carpeta 'vendor' de la imagen
